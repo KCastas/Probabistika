@@ -1,25 +1,30 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <numeric> 
 #include <algorithm>
 
 class Dataset {
 private:
 	std::vector<double> observations; 
+	
+	// Measures of Central Tendency
 	double mean;
 	double median;
+	std::vector<double> mode;
 public:
 	Dataset(const std::vector<double>& data) : observations(data) {}
-
+	
+	// Calculations for Measures of Central Tendency
 	double calculateMean(){
-		double sum = std::accumulate(observations.begin(), observations.end(), 0.0);
-
 		int n = observations.size();
 
 		if (n == 0) {
 			mean = 0.0;
 			return 0.0;
 		}
+
+		double sum = std::accumulate(observations.begin(), observations.end(), 0.0);
 
 		mean = sum / n;
 
@@ -47,7 +52,35 @@ public:
 		median = (lowerHalfObservation + higherHalfObservation)/2.0;
 
 		return median;
+	}
 
+	std::vector<double> calculateMode(){
+		int n = observations.size();
+		
+		if (n == 0){
+			mode.clear();
+			return mode;
+		}
+
+		std::unordered_map<double, int> freqMap;
+		for (double obs : observations) {
+			freqMap[obs]++;
+		}
+
+		int maxFreq = 0;
+		for (const auto& freq: freqMap) {
+			if (freq.second > maxFreq){
+				maxFreq = freq.second;
+			}
+		}
+
+		for (const auto& freq: freqMap) {
+			if (freq.second == maxFreq){
+				mode.push_back(freq.first);
+			}
+		}
+
+		return mode;
 	}
 };
 
@@ -57,6 +90,7 @@ int main (){
 
 	std::cout << "Calculated Mean: " << dataset.calculateMean() << "\n";
 	std::cout << "Calculated Median: " << dataset.calculateMedian() << "\n";
+	//std::cout << "Calculated Mode: " << dataset.calculateMode() << "\n"; // TODO:: add function to print modes
 
 	return 0;
 }
