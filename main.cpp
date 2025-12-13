@@ -82,15 +82,32 @@ public:
 
 		return mode;
 	}
+
+  void printModes(){
+    calculateMode();
+    int n = mode.size();
+
+    if (n == 0){
+      std::cout << "No mode\n"; 
+      return;
+    }
+
+    std::cout << "Calculated modes: ";
+    for (int i=0; i <= n -1; i++){
+      std::cout << mode[i] << ", ";
+    }
+
+    std::cout << "\n";
+  }
 };
 
 
 int main (){
-	Dataset dataset({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+	Dataset dataset({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 2, 3, 3,});
 
 	std::cout << "Calculated Mean: " << dataset.calculateMean() << "\n";
 	std::cout << "Calculated Median: " << dataset.calculateMedian() << "\n";
-	//std::cout << "Calculated Mode: " << dataset.calculateMode() << "\n"; // TODO:: add function to print modes
+	dataset.printModes();
 
 	return 0;
 }
