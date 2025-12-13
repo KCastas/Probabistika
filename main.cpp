@@ -22,6 +22,7 @@ private:
   double variance;
   double standardDeviation;
   double cv; // Coefficient of Variation
+  bool homogeneous;
 
 public:
 	Dataset(const std::vector<double>& data, const bool is_sample) : observations(data), isSample(is_sample){}
@@ -193,6 +194,18 @@ public:
     cv = (1.0 * standardDeviation / mean) * 100;
     return cv;
   }
+
+  bool isHomogeneous(){
+    calculateCV(); 
+
+    if (cv < 10.0) {
+      homogeneous = true;
+    } else {
+      homogeneous = false;
+    }
+
+    return homogeneous;
+  } 
 };
 
 int main (){
@@ -206,6 +219,7 @@ int main (){
   std::cout << "Calculated Variance: " << dataset.calculateVariance() << "\n";
   std::cout << "Calculated Standard Deviation: " << dataset.calculateStandardDeviation() << "\n";
   std::cout << "Calculated Coefficient of Variation: " << dataset.calculateCV() << "\n";
+  std::cout << "Is the sample homogeneous? 1 for yes, 0 for no. " << dataset.isHomogeneous() << "\n";
 
 	return 0;
 }
