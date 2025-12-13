@@ -7,13 +7,24 @@
 class Dataset {
 private:
 	std::vector<double> observations; 
-	
+	bool isSample;
+
 	// Measures of Central Tendency
 	double mean;
 	double median;
 	std::vector<double> mode;
+
+  // Measures of Location
+
+  // Measures of Dispersion
+  double range;
+  double meanAbsoluteDeviation;
+  double variance;
+  double standardDeviation;
+  double cv; // Coefficient of Variation
+
 public:
-	Dataset(const std::vector<double>& data) : observations(data) {}
+	Dataset(const std::vector<double>& data, const bool is_sample) : observations(data), isSample(is_sample){}
 	
 	// Calculations for Measures of Central Tendency
 	double calculateMean(){
@@ -33,7 +44,8 @@ public:
 	double calculateMedian(){
 		int n = observations.size();
 		
-		std::sort(observations.begin(), observations.end());
+    std::vector<double> sortedObs = observations;
+		std::sort(sortedObs.begin(), sortedObs.end());
 		
 		if (n % 2 != 0) {
 			median = observations[n/2];
@@ -46,8 +58,8 @@ public:
 
 		int lowerIndex = (int)n / 2;
 		
-		double lowerHalfObservation = observations[lowerIndex -1];
-		double higherHalfObservation = observations[lowerIndex];
+		double lowerHalfObservation = sortedObs[lowerIndex -1];
+		double higherHalfObservation = sortedObs[lowerIndex];
 		
 		median = (lowerHalfObservation + higherHalfObservation)/2.0;
 
@@ -99,15 +111,101 @@ public:
 
     std::cout << "\n";
   }
+
+  // Calculations for Measures of Location
+
+
+  // Calculations for Measures of Dispersion
+  double calculateRange(){
+    if (observations.empty()) {
+      range = 0.0;
+      return 0.0;
+    }
+
+    double minVal = *std::min_element(observations.begin(), observations.end());
+    double maxVal = *std::max_element(observations.begin(), observations.end());
+
+    range = maxVal - minVal; 
+    return range;
+  }
+
+  double calculateMeanAbsoluteDeviation(){
+    int n = observations.size(); 
+
+    if (n == 0){
+      meanAbsoluteDeviation = 0; 
+      return meanAbsoluteDeviation;
+    }
+
+    calculateMean();
+    double absoluteDevSum = 0;
+
+    for (double obs : observations) {
+      double deviation = obs - mean; 
+      absoluteDevSum += std::abs(deviation);
+    }
+
+    meanAbsoluteDeviation = absoluteDevSum / n; 
+    
+    return meanAbsoluteDeviation;
+  }
+
+  double calculateVariance(){
+    int n = observations.size();
+
+    if (n == 0){
+      variance = 0;
+      return variance;
+    }
+
+    calculateMean();
+    double squaredDevSum = 0;
+
+    for (double obs : observations) {
+      double deviation = obs - mean;
+      squaredDevSum += std::pow(deviation, 2);
+    }
+
+    if (isSample){
+      variance = squaredDevSum/(n - 1);
+    } else{
+      variance = squaredDevSum / n;
+    }
+
+    return variance;
+  }
+
+  double calculateStandardDeviation(){
+    calculateVariance(); 
+    
+    standardDeviation = std::sqrt(variance);
+    return standardDeviation;
+  }
+
+  double calculateCV(){
+    calculateStandardDeviation();
+
+    if (standardDeviation == 0){
+      cv = 0;
+      return cv;
+    }
+
+    cv = (1.0 * standardDeviation / mean) * 100;
+    return cv;
+  }
 };
 
-
 int main (){
-	Dataset dataset({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 2, 3, 3,});
+	Dataset dataset({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 2.0, 2.0, 3.0, 3.0,}, true);
 
 	std::cout << "Calculated Mean: " << dataset.calculateMean() << "\n";
 	std::cout << "Calculated Median: " << dataset.calculateMedian() << "\n";
 	dataset.printModes();
+  std::cout << "Calculated Range: " << dataset.calculateRange() << "\n";
+  std::cout << "Calculated Mean Absolute Deviation: " << dataset.calculateMeanAbsoluteDeviation() << "\n";
+  std::cout << "Calculated Variance: " << dataset.calculateVariance() << "\n";
+  std::cout << "Calculated Standard Deviation: " << dataset.calculateStandardDeviation() << "\n";
+  std::cout << "Calculated Coefficient of Variation: " << dataset.calculateCV() << "\n";
 
 	return 0;
 }
