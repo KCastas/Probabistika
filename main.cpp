@@ -24,6 +24,12 @@ private:
   double cv; // Coefficient of Variation
   bool homogeneous;
 
+  double z_score; 
+
+  // Measures of Skewness and Kurtosis
+  double skewness;
+  double kurtosis;
+
 public:
 	Dataset(const std::vector<double>& data, const bool is_sample) : observations(data), isSample(is_sample){}
 	
@@ -205,7 +211,83 @@ public:
     }
 
     return homogeneous;
-  } 
+  }
+
+  double calculateZ_score(double x){
+    calculateStandardDeviation(); 
+
+    if (cv == 0){
+      z_score = 0; 
+      return z_score; // no sample
+    }
+
+    z_score = (x - mean) / standardDeviation;
+    
+    return z_score; 
+  }
+
+  void analyzeChebyshev(double k) {
+    if (k <= 1) {
+      std::cout << "Chebyshev's rule requires k > 1";
+      return;
+    }
+
+    calculateStandardDeviation();
+    if (standardDeviation == 0){
+      std::cout << "Sample or population is possibly empty, or consists of completely identical observations.";
+      return;
+    }
+
+    double percentage = 1 - (1/ std::pow(k, 2));
+
+    std::cout << "At least " << percentage << "% of the samples/population have a value between " << (mean - k* standardDeviation) << " and " << (mean + k * standardDeviation) << " (" << mean << " ± " << k << "*" << standardDeviation << ")\n";
+  }
+
+  // Calculations for Measures of Skewness and Kurtosis
+  
+  double calculateSkewness(){
+    calculateStandardDeviation();
+
+    if (standardDeviation == 0){
+      skewness = 0;
+      return skewness;
+    }
+
+    int n = observations.size();
+
+    double cubedDevSum = 0;
+
+    for (double obs : observations) {
+      double deviation = obs - mean;
+      cubedDevSum += std::pow(deviation, 3);
+    }
+
+    skewness = (1/n) * (cubedDevSum / std::pow(standardDeviation, 3)); 
+    
+    return skewness;
+  }
+
+  double calculateKurtosis(){
+    calculateStandardDeviation();
+
+    if (standardDeviation == 0){
+      kurtosis = 0;
+      return kurtosis;
+    }
+
+    int n = observations.size();
+
+    double tesseractedDevSum = 0;
+
+    for (double obs : observations) {
+      double deviation = obs - mean;
+      tesseractedDevSum += std::pow(deviation, 4);
+    }
+
+    kurtosis = (1/n) * (tesseractedDevSum / std::pow(standardDeviation, 4));
+
+    return kurtosis;
+  }
 };
 
 int main (){
@@ -218,8 +300,8 @@ int main (){
   std::cout << "Calculated Mean Absolute Deviation: " << dataset.calculateMeanAbsoluteDeviation() << "\n";
   std::cout << "Calculated Variance: " << dataset.calculateVariance() << "\n";
   std::cout << "Calculated Standard Deviation: " << dataset.calculateStandardDeviation() << "\n";
-  std::cout << "Calculated Coefficient of Variation: " << dataset.calculateCV() << "\n";
-  std::cout << "Is the sample homogeneous? 1 for yes, 0 for no. " << dataset.isHomogeneous() << "\n";
+  std::cout << "Calculated Coefficient of Variation: " << dataset.calculateCV() << "%\n";
+  std::cout << "Is the sample/population homogeneous? 1 for yes, 0 for no. " << dataset.isHomogeneous() << "\n";
 
 	return 0;
 }
