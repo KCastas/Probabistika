@@ -3,6 +3,46 @@
 #include <numeric>
 #include <algorithm>
 
+class ProbabilityCalculator {
+  public: 
+    static double eventProbability(int favorableN, int N){
+      return 1.0 * favorableN / N; 
+    }
+
+    static double complement(double pA){
+      return 1.0 - pA;
+    }
+
+    static double intersection(double pA, double pBgivenA){
+      return 1.0 * pA * pBgivenA;
+    }
+
+    static double unionProbability(double pA, double pB, double pIntersection){
+      return (double)(pA + pB - pIntersection); 
+    }
+
+    // Independent Events
+    static double unionProbability(double pA, double pB){
+      return (double)(pA + pB);
+    }
+
+    // Simplified Example465try7
+    static double bayes(double pK, double pA, double pBgivenA, double pBgivenK){
+      double pKgivenB = (pK * pBgivenK) / (pK * pBgivenK + pA * pBgivenA); 
+
+      return pKgivenB;
+    }
+
+    static double bayes(double pS2, double pEgivenS2, double pS1, double pEgivenS1, double pS3, double pEgivenS3){
+      double pS2givenE = (pS2 * pEgivenS2) / (pS1 * pEgivenS1 + pS2 * pEgivenS2 + pS3 * pEgivenS3);
+
+      return pS2givenE;
+    };
+};
+
+
+
+
 
 // Implementation For Two INDEPENDENT Events
 class ChanceExperiment {
@@ -80,6 +120,6 @@ class ChanceExperiment {
     }
 };
 
-int main(){
-
+void main(){
+  std::cout << "Hello";
 }
