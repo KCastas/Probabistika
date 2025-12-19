@@ -26,18 +26,26 @@ class ProbabilityCalculator {
       return (double)(pA + pB);
     }
 
-    // Simplified Example465try7
-    static double bayes(double pK, double pA, double pBgivenA, double pBgivenK){
-      double pKgivenB = (pK * pBgivenK) / (pK * pBgivenK + pA * pBgivenA); 
 
-      return pKgivenB;
+    static double bayes(double psB, double psAgivenB, const std::vector<std::pair<double, double>>& partitions){
+      double numerator = 1.0 * psB * psAgivenB;
+      
+      double denominator = 0; 
+      for (const auto& partition : partitions){
+        double pBi = partition.first; 
+        double pAgivenBi = partition.second;
+
+        denominator += 1.0 * pBi * pAgivenBi;
+      }
+
+      if (denominator == 0){
+        return 0;
+      }
+
+      double pBgivenA = numerator / denominator;
+
+      return pBgivenA;
     }
-
-    static double bayes(double pS2, double pEgivenS2, double pS1, double pEgivenS1, double pS3, double pEgivenS3){
-      double pS2givenE = (pS2 * pEgivenS2) / (pS1 * pEgivenS1 + pS2 * pEgivenS2 + pS3 * pEgivenS3);
-
-      return pS2givenE;
-    };
 };
 
 
