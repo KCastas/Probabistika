@@ -2,6 +2,7 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <math.h>
 
 class ProbabilityCalculator {
   public: 
@@ -128,6 +129,7 @@ class ChanceExperiment {
     }
 };
 
-void main(){
-  std::cout << "Hello";
+int main(){
+  
+  return 0;
 }
