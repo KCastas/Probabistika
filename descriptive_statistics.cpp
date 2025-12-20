@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <numeric> 
 #include <algorithm>
+#include <math.h>
 
 class Dataset {
 private:
